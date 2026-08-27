@@ -1,0 +1,6 @@
+{
+  "name": "Data Analyst Master Application Portal",
+  "description": "Application tracker, company directory, 5-round fresher interview preparation playbook, top 50 question banks per skill, topic checklist, and AI mock interviewer for Data Analyst roles in Hyderabad and Bangalore.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
