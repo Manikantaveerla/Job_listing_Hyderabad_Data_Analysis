@@ -1,7 +1,7 @@
 import { UserProfile } from "../types";
 
 export const candidateProfile: UserProfile = {
-  fullName: "Manikanta Veerla & Vijulu",
+  fullName: "Manikanta Veerla",
   title: "Data Analyst • BI & Data Solutions Engineer",
   subTitle: "SQL / T-SQL • Power BI & DAX • Python (Pandas, NumPy) • Advanced Excel • ETL Pipelines • AWS & Snowflake",
   batch: "2026 Batch Graduate",

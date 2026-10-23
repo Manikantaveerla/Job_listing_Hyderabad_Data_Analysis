@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import {
   ExternalLink,
   Sparkles,
@@ -6,11 +6,15 @@ import {
   Flame,
   Users,
   Briefcase,
+  Linkedin,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { Company, ApplicationRecord, ApplicationStatus } from "../types";
 import {
   getLinkedInFresherJobSearchUrl,
   getLinkedInDecisionMakerSearchUrl,
+  getCompanyLinkedInProfileUrl,
 } from "../data/companiesData";
 
 interface CompanyTableProps {
@@ -39,6 +43,27 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({
   onOpenOutreach,
   onQuickUpdateStatus,
 }) => {
+  const [pageSize, setPageSize] = useState<number>(50);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  // Reset to page 1 if companies filter changes
+  const totalPages = pageSize === -1 ? 1 : Math.ceil(companies.length / pageSize);
+  const safePage = Math.min(Math.max(1, currentPage), totalPages || 1);
+
+  const paginatedCompanies = useMemo(() => {
+    if (pageSize === -1) return companies;
+    const start = (safePage - 1) * pageSize;
+    return companies.slice(start, start + pageSize);
+  }, [companies, safePage, pageSize]);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    const tableEl = document.getElementById("companies-table-container");
+    if (tableEl) {
+      tableEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   if (companies.length === 0) {
     return (
       <div className="bg-white border border-slate-200 rounded-2xl p-12 text-center text-slate-600 shadow-xs">
@@ -66,7 +91,7 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {companies.map((company) => {
+            {paginatedCompanies.map((company) => {
               const record = records[company.id] || {
                 status: "Not Applied",
               };
@@ -83,7 +108,7 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({
                     {company.id}
                   </td>
 
-                  {/* Company Name & City */}
+                  {/* Company Name, City & Package Badge */}
                   <td className="py-3.5 px-4">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="font-bold text-slate-900 text-sm group-hover:text-blue-700 transition">
@@ -97,81 +122,101 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({
                           <Flame className="w-2.5 h-2.5 fill-amber-600 text-amber-600" /> Fresher
                         </span>
                       )}
+                      {/* Direct LinkedIn Company Profile Tag */}
+                      <a
+                        id={`company-linkedin-badge-${company.id}`}
+                        href={getCompanyLinkedInProfileUrl(company)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded-md bg-[#0a66c2]/10 hover:bg-[#0a66c2]/20 text-[#0a66c2] border border-[#0a66c2]/30 text-[10px] font-bold transition"
+                        title={`Open official LinkedIn Company Page for ${company.name}`}
+                      >
+                        <Linkedin className="w-2.5 h-2.5 fill-current" /> in Page
+                      </a>
                     </div>
 
-                    <div className="flex items-center gap-2 mt-1 text-slate-600 text-[11px]">
-                      <span
-                        className={
-                          company.city === "Hyderabad" ? "text-blue-700 font-semibold" : "text-purple-700 font-semibold"
-                        }
-                      >
+                    {/* Salary Package & Speed Badge */}
+                    <div className="mt-1 flex items-center gap-1.5 flex-wrap">
+                      {company.packageCategory === "3-6 LPA" ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold text-[11px]">
+                          ⚡ {company.salaryPackage || "₹3.5 - ₹6.0 LPA"}
+                          <span className="text-[10px] text-emerald-600 font-medium font-mono">
+                            [{company.speedToOffer || "7-21 Days"}]
+                          </span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-800 border border-indigo-300 font-bold text-[11px]">
+                          🚀 {company.salaryPackage || "₹6.5 - ₹9.5 LPA"}
+                          <span className="text-[10px] text-indigo-600 font-medium font-mono">
+                            [{company.speedToOffer || "14-30 Days"}]
+                          </span>
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-1.5 text-[11px] text-slate-600 mt-1">
+                      <span className="font-semibold text-slate-800">
                         📍 {company.city}
                       </span>
                       <span>•</span>
-                      <span className="text-slate-600">{company.type}</span>
+                      <span>{company.type}</span>
                     </div>
-
-                    {record.jobId && (
-                      <div className="font-mono text-[10px] text-blue-700 font-semibold mt-0.5">
-                        Req ID: {record.jobId}
-                      </div>
-                    )}
                   </td>
 
                   {/* Sector & Tier */}
                   <td className="py-3.5 px-4">
-                    <div className="space-y-1">
-                      <span className="inline-block px-2 py-0.5 rounded-md bg-slate-100 text-slate-800 border border-slate-200 text-[11px] font-medium line-clamp-1">
-                        {company.sector}
+                    <div className="font-semibold text-slate-900 line-clamp-1">{company.sector}</div>
+                    {company.tier && (
+                      <span className="inline-block text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200 mt-1 font-medium">
+                        {company.tier}
                       </span>
-                      {company.tier && (
+                    )}
+                    {company.domainGroup && (
+                      <div className="text-[10px] text-blue-700 font-medium mt-0.5">
+                        {company.domainGroup}
+                      </div>
+                    )}
+                  </td>
+
+                  {/* Fresher Fit & Skills */}
+                  <td className="py-3.5 px-4">
+                    <p className="text-slate-700 text-xs line-clamp-2 leading-relaxed">
+                      {company.fitReason}
+                    </p>
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      {company.skills.slice(0, 4).map((skill, sIdx) => (
                         <span
-                          className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-medium border ${
-                            company.tier === "Boutique Analytics"
-                              ? "bg-purple-50 text-purple-800 border-purple-200"
-                              : company.tier === "Fast-Growing Startup"
-                              ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                              : "bg-blue-50 text-blue-800 border-blue-200"
-                          }`}
+                          key={sIdx}
+                          className="px-1.5 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-700 text-[10px] font-mono"
                         >
-                          {company.tier}
+                          {skill}
+                        </span>
+                      ))}
+                      {company.skills.length > 4 && (
+                        <span className="text-[10px] text-slate-500 self-center">
+                          +{company.skills.length - 4}
                         </span>
                       )}
                     </div>
                   </td>
 
-                  {/* Fit Reason & Fresher Note */}
-                  <td className="py-3.5 px-4 text-slate-700 leading-relaxed">
-                    <div className="line-clamp-2 text-xs font-normal">{company.fitReason}</div>
-                    {company.fresherNote && (
-                      <div className="mt-1 text-[11px] text-blue-800 line-clamp-1 font-semibold">
-                        💡 {company.fresherNote}
-                      </div>
-                    )}
-                    {record.notes && (
-                      <div className="mt-1 text-[11px] text-amber-900 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 line-clamp-1">
-                        📝 Log: {record.notes}
-                      </div>
-                    )}
-                  </td>
-
                   {/* Status Dropdown */}
                   <td className="py-3.5 px-4">
                     <select
-                      id={`status-dropdown-${company.id}`}
+                      id={`company-status-select-${company.id}`}
                       value={status}
                       onChange={(e) =>
                         onQuickUpdateStatus(company.id, e.target.value as ApplicationStatus)
                       }
-                      className={`text-xs px-2.5 py-1 rounded-lg border focus:outline-hidden font-semibold cursor-pointer ${
+                      className={`text-xs px-2.5 py-1.5 rounded-lg border focus:outline-hidden font-medium cursor-pointer transition w-full ${
                         statusBadgeClasses[status] || statusBadgeClasses["Not Applied"]
                       }`}
                     >
                       <option value="Not Applied">Not Applied</option>
                       <option value="In Progress">In Progress</option>
                       <option value="Applied">Applied</option>
-                      <option value="Referral Requested">Referral Requested</option>
-                      <option value="Online Assessment">Online Assessment</option>
+                      <option value="Referral Requested">Referral Sent</option>
+                      <option value="Online Assessment">OA / Assessment</option>
                       <option value="Interview Scheduled">Interview Scheduled</option>
                       <option value="Offer Received">Offer Received 🎉</option>
                       <option value="Rejected">Rejected</option>
@@ -187,6 +232,17 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({
                   {/* Actions */}
                   <td className="py-3.5 px-4 text-right">
                     <div className="flex items-center justify-end gap-1.5 flex-wrap">
+                      {/* Official LinkedIn Company Profile Link */}
+                      <a
+                        href={getCompanyLinkedInProfileUrl(company)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="p-1.5 bg-[#0a66c2]/10 hover:bg-[#0a66c2] hover:text-white text-[#0a66c2] rounded-lg border border-[#0a66c2]/30 transition"
+                        title={`Open official LinkedIn Company Page for ${company.name}`}
+                      >
+                        <Linkedin className="w-3.5 h-3.5 fill-current" />
+                      </a>
+
                       {/* Direct LinkedIn Fresher Jobs Filter */}
                       <a
                         href={getLinkedInFresherJobSearchUrl(company)}
@@ -247,7 +303,62 @@ export const CompanyTable: React.FC<CompanyTableProps> = ({
           </tbody>
         </table>
       </div>
+
+      {/* Pagination Controls Footer */}
+      <div className="px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2">
+          <span className="text-slate-600">Rows per page:</span>
+          <select
+            id="table-page-size-select"
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+            className="bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs text-slate-800 font-semibold cursor-pointer"
+          >
+            <option value={25}>25</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+            <option value={-1}>All ({companies.length})</option>
+          </select>
+          <span className="text-slate-500 ml-2">
+            Showing {(safePage - 1) * (pageSize === -1 ? companies.length : pageSize) + 1} -{" "}
+            {pageSize === -1
+              ? companies.length
+              : Math.min(safePage * pageSize, companies.length)}{" "}
+            of {companies.length}
+          </span>
+        </div>
+
+        {pageSize !== -1 && totalPages > 1 && (
+          <div className="flex items-center gap-1.5">
+            <button
+              id="table-prev-page-btn"
+              disabled={safePage <= 1}
+              onClick={() => handlePageChange(safePage - 1)}
+              className="p-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition"
+              title="Previous Page"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            <span className="px-2 font-semibold text-slate-800">
+              Page {safePage} of {totalPages}
+            </span>
+
+            <button
+              id="table-next-page-btn"
+              disabled={safePage >= totalPages}
+              onClick={() => handlePageChange(safePage + 1)}
+              className="p-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition"
+              title="Next Page"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
-

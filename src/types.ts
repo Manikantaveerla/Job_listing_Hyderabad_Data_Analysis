@@ -19,13 +19,34 @@ export type CompanyScale =
   | "Boutique Analytics";
 
 export type CompanyTier =
+  | "Tier 1 Product MNC"
+  | "Global Capability Center (GCC)"
+  | "HealthTech & BioPharma"
+  | "IT Services & Digital Engineering"
+  | "Indian Unicorn & High-Growth SaaS"
+  | "Telecom, Media & Quick-Commerce"
+  | "Semiconductor & Embedded Systems"
+  | "AutoTech, Aerospace & DeepTech"
   | "Boutique Analytics"
   | "Fast-Growing Startup"
-  | "Mid-Market IT"
   | "Enterprise Tech"
-  | "Product MNC";
+  | "Product MNC"
+  | "Gaming, Media & AdTech"
+  | "Cybersecurity & Cloud Infra"
+  | "AI, Data & Observability"
+  | "HR Tech & EdTech"
+  | "Logistics & Supply Chain"
+  | "Consulting & Business Strategy"
+  | string;
 
-export type CityLocation = "Hyderabad" | "Bangalore";
+export type CityLocation =
+  | "Hyderabad"
+  | "Bangalore"
+  | "Pune"
+  | "Chennai"
+  | "Delhi NCR"
+  | "Pan-India / Hubs"
+  | string;
 
 export interface Company {
   id: number;
@@ -36,22 +57,34 @@ export interface Company {
   sector: string;
   fitReason: string;
   careerUrl: string;
+  linkedinUrl?: string;
   recommendedRoles: string[];
   skills: string[];
   isFresherPriority?: boolean;
   fresherNote?: string;
+  packageCategory?: "3-6 LPA" | "6-10 LPA";
+  salaryPackage?: string;
+  speedToOffer?: "Fast-Track (7-21 Days)" | "Growth-Track (14-30 Days)";
+  hiringProcess?: string;
   domainGroup:
+    | "Global Product & Cloud"
     | "FinTech & Banking"
-    | "SaaS & Cloud"
+    | "SaaS & Enterprise Cloud"
     | "Healthcare & Pharma"
+    | "IT Services & Consulting"
     | "Semiconductors & Hardware"
-    | "E-Commerce & Quick Comm"
-    | "AI & Data Platforms"
-    | "Travel & Mobility"
-    | "Gaming & Media"
-    | "HR Tech & EdTech"
+    | "E-Commerce & Quick Commerce"
+    | "AI, Data & Observability"
+    | "Automotive, Mobility & Aerospace"
+    | "Gaming, Media & AdTech"
+    | "Telecom & Networking"
+    | "Cybersecurity & Cloud Infra"
     | "Logistics & Supply Chain"
-    | "Other";
+    | "HR Tech & EdTech"
+    | "Consulting & Business Strategy"
+    | "AI & Data Platforms"
+    | "Other"
+    | string;
 }
 
 export interface ApplicationRecord {
@@ -118,3 +151,34 @@ export interface DailySprint {
   lastActiveDate: string;
   streak: number;
 }
+
+export interface DailyJobPosting {
+  id: string;
+  companyName: string;
+  companyId?: number;
+  roleTitle: string;
+  location: string;
+  experienceLevel: string; // e.g. "0-1 years / Fresher (2026 Batch)"
+  postedDate: string; // e.g. "Today", "1 day ago"
+  tierCategory: string; // e.g. "GCC", "Product MNC", "Unicorn SaaS", "Boutique Analytics"
+  requiredSkills: string[];
+  salaryRange?: string;
+  packageCategory?: "3-6 LPA" | "6-10 LPA";
+  atsPlatform: "Workday" | "Greenhouse" | "Lever" | "Direct Career" | "LinkedIn Post" | "Phenom" | "TCS iON" | "Direct Walk-in" | string;
+  applyUrl: string;
+  jobDescriptionSummary: string;
+  fresherHiringType: "Campus / Off-Campus Drive" | "Early Career FTE" | "Analytics Graduate Intern to FTE" | "Direct Entry-Level" | "Direct FTE - Fast Placement" | "Early Career Drive" | "Off-Campus Drive" | "National Off-Campus Drive" | "TCS NQT National Drive" | "Direct FTE" | "Walk-in / Immediate Offer" | string;
+  isUrgent?: boolean;
+}
+
+export interface AtsScanner {
+  id: string;
+  title: string;
+  platform: string;
+  badge: string;
+  description: string;
+  searchUrl: string;
+  targetCompanyTypes: string;
+  frequencyRecommendation: string;
+}
+

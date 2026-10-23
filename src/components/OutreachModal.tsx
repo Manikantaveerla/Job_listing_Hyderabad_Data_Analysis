@@ -25,6 +25,8 @@ import {
   getGoogleFresherJobsUrl,
   getLinkedInPeopleSearchUrl,
   getLinkedInJobsUrl,
+  getCompanyLinkedInProfileUrl,
+  getCompanyLinkedInPeopleUrl,
 } from "../data/companiesData";
 
 interface OutreachModalProps {
@@ -95,6 +97,7 @@ I am a 2026 CS graduate with two Data Analyst internships under my belt (Bold An
 2. **Power BI & DAX:** Built end-to-end automated dashboards from raw databases that cut manual reporting turnaround by 40%.
 3. **Domain Alignment:** Built ${relevantProject.title} using ${relevantProject.tools.join(", ")}.
 4. **Certifications:** ServiceNow Certified System Administrator (CSA #27288495), SQL for Data Analysis, and Power BI DAX Mastery.
+5. **0-Day Notice & Immediate Joining:** Based locally in Hyderabad, zero waiting period, and available for immediate on-site or virtual technical interviews.
 
 Live Portfolio & Repositories: ${candidateProfile.portfolioUrl}
 
@@ -265,9 +268,21 @@ Portfolio: ${candidateProfile.portfolioUrl}`;
         {/* Rapid Research & 1-Click Search Bar */}
         <div className="px-5 py-2.5 bg-slate-100 border-b border-slate-200 flex items-center justify-between gap-2 flex-wrap text-xs">
           <span className="text-slate-700 font-bold flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5 text-amber-600 fill-amber-500" /> 1-Click Search:
+            <Zap className="w-3.5 h-3.5 text-amber-600 fill-amber-500" /> 1-Click Intelligence:
           </span>
           <div className="flex items-center gap-2 flex-wrap">
+            {/* LinkedIn Company Profile */}
+            <a
+              id="outreach-linkedin-profile-btn"
+              href={getCompanyLinkedInProfileUrl(company)}
+              target="_blank"
+              rel="noreferrer"
+              className="px-2.5 py-1 bg-[#0a66c2]/10 hover:bg-[#0a66c2]/20 text-[#0a66c2] border border-[#0a66c2]/30 rounded-lg text-[11px] font-bold flex items-center gap-1 transition"
+              title={`View ${company.name} official LinkedIn company profile`}
+            >
+              <Linkedin className="w-3 h-3 fill-current" /> in Company Page <ExternalLink className="w-2.5 h-2.5" />
+            </a>
+
             <a
               href={getLinkedInFresherJobSearchUrl(company)}
               target="_blank"
@@ -277,12 +292,21 @@ Portfolio: ${candidateProfile.portfolioUrl}`;
               <Briefcase className="w-3 h-3 text-white" /> LinkedIn 0-1 yr Jobs <ExternalLink className="w-2.5 h-2.5" />
             </a>
             <a
-              href={getLinkedInDecisionMakerSearchUrl(company)}
+              href={getCompanyLinkedInPeopleUrl(company)}
               target="_blank"
               rel="noreferrer"
               className="px-2.5 py-1 bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition"
             >
-              <Users className="w-3 h-3 text-blue-600" /> Analytics Leads on LinkedIn <ExternalLink className="w-2.5 h-2.5" />
+              <Users className="w-3 h-3 text-blue-600" /> Employees & Leads <ExternalLink className="w-2.5 h-2.5" />
+            </a>
+            <a
+              href={getLinkedInDecisionMakerSearchUrl(company)}
+              target="_blank"
+              rel="noreferrer"
+              className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 rounded-lg text-[11px] font-bold flex items-center gap-1 transition"
+              title="Search Founders, CTOs, and Head of Analytics on LinkedIn"
+            >
+              <Zap className="w-3 h-3 text-amber-600 fill-current" /> Find Founders / CTO <ExternalLink className="w-2.5 h-2.5" />
             </a>
             <a
               href={getGoogleFresherJobsUrl(company)}

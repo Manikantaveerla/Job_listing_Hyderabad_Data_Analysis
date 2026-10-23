@@ -14,9 +14,17 @@ import {
   MessageSquare,
   AlertCircle,
   Sparkles,
+  Linkedin,
 } from "lucide-react";
 import { Company, ApplicationRecord, ApplicationStatus } from "../types";
-import { getLinkedInJobsUrl, getLinkedInPeopleSearchUrl, getCareerSearchUrl } from "../data/companiesData";
+import {
+  getLinkedInJobsUrl,
+  getLinkedInPeopleSearchUrl,
+  getCareerSearchUrl,
+  getCompanyLinkedInProfileUrl,
+  getCompanyLinkedInJobsUrl,
+  getCompanyLinkedInPeopleUrl,
+} from "../data/companiesData";
 
 interface CompanyDetailModalProps {
   company: Company | null;
@@ -125,9 +133,21 @@ export const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({
           <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 flex flex-wrap items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-slate-700 font-bold">
               <ExternalLink className="w-4 h-4 text-blue-600" />
-              <span>Direct Job Portals:</span>
+              <span>Direct Portals & LinkedIn:</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
+              {/* Official LinkedIn Company Page */}
+              <a
+                id="modal-linkedin-company-link"
+                href={getCompanyLinkedInProfileUrl(company)}
+                target="_blank"
+                rel="noreferrer"
+                className="px-3 py-1.5 bg-[#0a66c2]/10 hover:bg-[#0a66c2]/20 text-[#0a66c2] border border-[#0a66c2]/30 rounded-lg text-xs font-bold flex items-center gap-1.5 transition"
+                title={`Open official LinkedIn company profile for ${company.name}`}
+              >
+                <Linkedin className="w-3.5 h-3.5 fill-current" /> LinkedIn Page
+              </a>
+
               <a
                 href={company.careerUrl}
                 target="_blank"
@@ -136,6 +156,7 @@ export const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({
               >
                 Official Careers <ExternalLink className="w-3 h-3" />
               </a>
+
               <a
                 href={getLinkedInJobsUrl(company.name, company.city)}
                 target="_blank"
@@ -144,14 +165,17 @@ export const CompanyDetailModal: React.FC<CompanyDetailModalProps> = ({
               >
                 LinkedIn Jobs <ExternalLink className="w-3 h-3 text-white" />
               </a>
+
               <a
-                href={getLinkedInPeopleSearchUrl(company.name, company.city)}
+                href={getCompanyLinkedInPeopleUrl(company)}
                 target="_blank"
                 rel="noreferrer"
                 className="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition"
+                title="Search employees, alumni, and recruiters at this company on LinkedIn"
               >
-                Find Recruiters <ExternalLink className="w-3 h-3" />
+                Employees & Leads <ExternalLink className="w-3 h-3" />
               </a>
+
               <button
                 id="modal-outreach-trigger-btn"
                 onClick={() => {

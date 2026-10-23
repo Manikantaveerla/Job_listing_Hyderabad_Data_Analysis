@@ -13,11 +13,12 @@ import {
 } from "lucide-react";
 import { ApplicationRecord, ApplicationStatus } from "../types";
 import { masterCompaniesList } from "../data/companiesData";
+import { candidateProfile } from "../data/candidateProfile";
 
 interface StatsDashboardProps {
   records: Record<number, ApplicationRecord>;
   onFilterStatus?: (status: ApplicationStatus | "All") => void;
-  onFilterCity?: (city: "Hyderabad" | "Bangalore" | "All") => void;
+  onFilterCity?: (city: string) => void;
 }
 
 export const StatsDashboard: React.FC<StatsDashboardProps> = ({
@@ -38,12 +39,10 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({
     Rejected: 0,
   };
 
-  let hydCount = 0;
-  let blrCount = 0;
+  const cityCounts: Record<string, number> = {};
 
   masterCompaniesList.forEach((c) => {
-    if (c.city === "Hyderabad") hydCount++;
-    if (c.city === "Bangalore") blrCount++;
+    cityCounts[c.city] = (cityCounts[c.city] || 0) + 1;
 
     const status = records[c.id]?.status || "Not Applied";
     if (counts[status] !== undefined) {
@@ -52,6 +51,12 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({
       counts["Not Applied"]++;
     }
   });
+
+  const hydCount = cityCounts["Hyderabad"] || 0;
+  const blrCount = cityCounts["Bangalore"] || 0;
+  const puneCount = cityCounts["Pune"] || 0;
+  const chennaiCount = cityCounts["Chennai"] || 0;
+  const ncrCount = cityCounts["Delhi NCR"] || 0;
 
   const totalActiveApplied =
     counts.Applied +
@@ -159,16 +164,23 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({
             <button
               id="filter-hyd-stat-btn"
               onClick={() => onFilterCity && onFilterCity("Hyderabad")}
-              className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg border border-slate-300 font-semibold cursor-pointer"
+              className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg border border-slate-300 font-semibold cursor-pointer text-[11px]"
             >
-              Hyderabad: <span className="font-bold text-blue-700">{hydCount}</span>
+              Hyd: <span className="font-bold text-blue-700">{hydCount}</span>
             </button>
             <button
               id="filter-blr-stat-btn"
               onClick={() => onFilterCity && onFilterCity("Bangalore")}
-              className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg border border-slate-300 font-semibold cursor-pointer"
+              className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg border border-slate-300 font-semibold cursor-pointer text-[11px]"
             >
-              Bangalore: <span className="font-bold text-indigo-700">{blrCount}</span>
+              Blr: <span className="font-bold text-indigo-700">{blrCount}</span>
+            </button>
+            <button
+              id="filter-all-cities-stat-btn"
+              onClick={() => onFilterCity && onFilterCity("All")}
+              className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg border border-slate-300 font-semibold cursor-pointer text-[11px]"
+            >
+              All: <span className="font-bold text-slate-700">{total}</span>
             </button>
           </div>
         </div>
@@ -201,7 +213,7 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({
               <Award className="w-4 h-4" />
             </div>
             <div>
-              <div className="font-bold text-slate-900">Manikanta Veerla</div>
+              <div className="font-bold text-slate-900">{candidateProfile.fullName}</div>
               <div className="text-[11px] text-slate-600">ServiceNow CSA • SQL • Power BI</div>
             </div>
           </div>
